@@ -1,0 +1,62 @@
+apply plugin: 'war'
+apply plugin: 'liberty'
+
+description = "Server-OpenLiberty Microprofile"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.6.3'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+//libertyRuntime 
+libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version: '[19.0.0.7,)'
+//microprofile
+providedCompile 'org.eclipse.microprofile:microprofile:3.0'
+//bd
+compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'
+compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.7.0'
+}
+
+
+ext {
+    appName = project.name
+    ServerHttpPort = 9080
+    ServerHttpsPort = 9443
+    warContext = appName
+}
+
+liberty {
+    server {
+        name = "${appName}Server"
+        configFile = file("src/main/liberty/config/server.xml")
+        bootstrapProperties = ['default.http.port': ServerHttpPort,
+                               'default.https.port': ServerHttpsPort,
+                               'app.context.root': warContext]
+        packageLiberty {
+            archive = "$buildDir/${appName}.zip"
+            include = "usr"
+        }
+    }
+}
+
+war {
+    archiveName = "${baseName}.${extension}"
+}
+
+

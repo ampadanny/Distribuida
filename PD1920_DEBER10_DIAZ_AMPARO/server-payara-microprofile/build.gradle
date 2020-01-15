@@ -1,0 +1,26 @@
+plugins {
+  id "fish.payara.micro-gradle-plugin" version "1.0.3"
+}
+
+repositories {
+      mavenCentral()
+}
+
+dependencies {
+//microprofile
+providedCompile 'org.eclipse.microprofile:microprofile:3.2'
+
+//bd
+compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'
+compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.7.0'
+
+}
+
+payaraMicro {
+    payaraVersion = '5.194'
+    deployWar = true
+    useUberJar = false
+    daemon = false
+    commandLineOptions = [port: 2468]
+    javaCommandLineOptions = [Dtest: 'test123', ea:true]
+}
